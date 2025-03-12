@@ -3,6 +3,7 @@ import { default as React, useState, useEffect } from "react";
 import Header from "./Header";
 import { useNavigate } from 'react-router-dom';
 import '../css/Grammar.css';
+import '../css/Overlay.css';
 //import socket from "./Socket";
 
 interface GrammarCorrectionResult {
@@ -32,6 +33,7 @@ const Grammar: React.FC = () => {
     useEffect(() => {
     socket.on("grammarCorrectionResult", (data: GrammarCorrectionResult) => {
       setGrammarCorrectionResult(data);
+      document.getElementById('overlay')!.style.display='none';
       console.log('grammaresult:', data);
     });
     
@@ -112,11 +114,8 @@ const handleSubmittoDashboard= () => {
                   <p>Total Correct Percentage: {grammarCorrectionResult.total.toFixed(2)}%</p>
                   <p>Final Sentiment: {sentimentResult?.final_csi !== undefined ? sentimentResult.final_csi.toFixed(2) : "N/A"}</p>
                   {/* <button className="grammar_next_button" onClick={handleSubmittoDashboard}>NEXT</button> */}
-                </div>
-              )}
-          </div>
-
-          <div className="swot">
+                  
+                  <div className="swot">
         <div className="sw">
                                 <label>Strength</label>
                                 <textarea readOnly value={strengths}></textarea>
@@ -130,6 +129,19 @@ const handleSubmittoDashboard= () => {
                                 <textarea readOnly value={threats}></textarea>
                             </div>
     </div>
+                </div>
+              )}
+          </div>
+
+          <div className='overlay' id='overlay'>
+        <div className='overlay-content'>
+          <div className="loader-container">
+            <div className="loader">
+              <div className="inner-circle"></div>
+            </div>
+          </div>
+        </div>            
+      </div>
         </React.Fragment>
     );
 }

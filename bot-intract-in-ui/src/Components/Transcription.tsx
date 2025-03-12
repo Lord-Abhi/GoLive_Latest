@@ -207,7 +207,7 @@ const Transcription: React.FC = () => {
       currentPronunciationConfig = new speechsdk.PronunciationAssessmentConfig(
         currentText,
         speechsdk.PronunciationAssessmentGradingSystem.HundredMark,
-        speechsdk.PronunciationAssessmentGranularity.Phoneme,
+        speechsdk.PronunciationAssessmentGranularity.Word,
         true
       );
       await currentPronunciationConfig.applyTo(assessmentRecognizer);
@@ -256,19 +256,26 @@ const Transcription: React.FC = () => {
       
             let errors: ErrorDetail[] = [];
       
+            // Filter out "None" errors and only include actual errors
             if (pronunciationResult.detailResult?.Words) {
               const mispronunciationErrors = pronunciationResult.detailResult.Words
                 .filter(word => word && word.Word)
+                .filter(word => {
+                  // Only include words with actual error types (not "None") or very low accuracy
+                  const errorType = word.PronunciationAssessment?.ErrorType || '';
+                  const accuracy = word.PronunciationAssessment?.AccuracyScore || 0;
+                  return (errorType !== '' && errorType !== 'None') || accuracy < 99;
+                })
                 .map(word => ({
                   word: word.Word,
-                  errorType: word.PronunciationAssessment?.ErrorType || 'None',
+                  errorType: word.PronunciationAssessment?.ErrorType || 'Mispronunciation',
                   accuracy: word.PronunciationAssessment?.AccuracyScore || 0
-                }))
-                .filter(error => error.errorType !== 'None' || error.accuracy < 80);
+                }));
       
               errors.push(...mispronunciationErrors);
             }
       
+            // Add omission errors
             referenceWords.forEach(word => {
               if (!spokenWords.includes(word)) {
                 errors.push({
@@ -471,32 +478,51 @@ const Transcription: React.FC = () => {
                       <p className="score-item">Pronunciation: {result.scores?.pronunciationScore.toFixed(2)}</p>
 
                       {result.scores?.errors?.length > 0 ? (
-                        <div className="errors-container">
-                          <p className="errors-title">Pronunciation Errors Found:</p>
-                          {(() => {
-                            // Group errors by type
-                            const errorsByType = result.scores.errors.reduce((acc, error) => {
-                              const type = error.errorType;
-                              if (!acc[type]) {
-                                acc[type] = [];
-                              }
-                              acc[type].push(error.word);
-                              return acc;
-                            }, {} as Record<string, string[]>);
+  <div className="errors-container">
+    <p className="errors-title">Pronunciation Errors Found:</p>
+    {(() => {
+      // Group errors by type, but filter out "None" errors
+      const errorsByType = result.scores.errors
+        .filter(error => error.errorType !== 'None') // Extra safety check
+        .reduce((acc, error) => {
+          // Use more descriptive error type labels
+          let displayType = error.errorType;
+          
+          // If needed, map technical error types to more user-friendly descriptions
+          if (displayType === '') {
+            displayType = 'Mispronunciation';
+          }
+          
+          if (!acc[displayType]) {
+            acc[displayType] = [];
+          }
+          
+          // Only add each word once per error type
+          if (!acc[displayType].includes(error.word)) {
+            acc[displayType].push(error.word);
+          }
+          
+          return acc;
+        }, {} as Record<string, string[]>);
 
-                            return Object.entries(errorsByType).map(([errorType, words]) => (
-                              <div key={errorType} className="error-group">
-                                <span className="error-type">{errorType} errors: </span>
-                                <span className="error-words">
-                                  {words.join(', ')}
-                                </span>
-                              </div>
-                            ));
-                          })()}
-                        </div>
-                      ) : (
-                        <p className="no-errors">No pronunciation errors detected</p>
-                      )}
+      // Only render if we have actual errors to show
+      if (Object.keys(errorsByType).length === 0) {
+        return <p className="no-errors">No significant pronunciation errors detected</p>;
+      }
+
+      return Object.entries(errorsByType).map(([errorType, words]) => (
+        <div key={errorType} className="error-group">
+          <span className="error-type">{errorType} errors: </span>
+          <span className="error-words">
+            {words.join(', ')}
+          </span>
+        </div>
+      ));
+    })()}
+  </div>
+) : (
+  <p className="no-errors">No pronunciation errors detected</p>
+)}
                     </div>
                   </td>
                 </tr>

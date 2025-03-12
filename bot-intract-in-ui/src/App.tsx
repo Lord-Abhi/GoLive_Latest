@@ -9,7 +9,7 @@ import MainLayout from "./Components/MainLayout";
 import Dashboard2 from "./Components/Dashboard2";
 import Login from "./Components/Login";
 import Video from "./Components/Video";
-import SWOT from "./Components/SWOT";
+//import SWOT from "./Components/SWOT";
 import Transcription from "./Components/Transcription";
 
 function App() {
@@ -46,7 +46,7 @@ function App() {
       <Route path="/grammar" element={<Grammar />} />
       <Route path="/video" element={<Video />} />
       <Route path="/tests1" element={<Tests1 />} />
-      <Route path="/swot" element={<SWOT />} />
+      {/* <Route path="/swot" element={<SWOT />} /> */}
       <Route path="/transcription" element={<Transcription />} />
       <Route path="/main" element={<MainLayout />}>
         <Route path="dashboard" element={<Dashboard2 />} />

@@ -3,6 +3,8 @@ import { default as React, useEffect} from "react";
 import '../css/Header.css';
 import '../css/NavBar.css';
 import '../css/QuestionMain.css'
+//import '../css/Grammar.css'
+import '../css/Overlay.css'
 import Timer from "../lib/test-timer";
 import Header from './Header';
 
@@ -21,6 +23,8 @@ const ExamLayout: React.FC<MainLayoutProps> = ({children}) => {
 
   useEffect(() => {
    
+    //window.onload = () => {  document.getElementById('warning')!.style.display='none'};
+document.getElementById('warning')!.style.display='none'
     console.log("inside useEffect");
     const overlayElement = document.getElementById('overlay');
     console.log("overlay element: ",overlayElement);
@@ -66,29 +70,29 @@ const ExamLayout: React.FC<MainLayoutProps> = ({children}) => {
     }
   };
 
-  // document.onvisibilitychange=()=>{
-  //   if(!disable_visiblity && exam_start){
-  //     if (document.visibilityState === 'hidden'){
-  //       if(sessionStorage.getItem('first_exam_warning')?.toLowerCase()==="true"){
-  //         stop_exam("intruption");
-  //       }else{
-  //         document.getElementById('warning')!.style.display="block";
-  //       }
-  //     }
-  //   }
-  // };
+  document.onvisibilitychange=()=>{
+    if(!disable_visiblity && exam_start){
+      if (document.visibilityState === 'hidden'){
+        if(sessionStorage.getItem('first_exam_warning')?.toLowerCase()==="true"){
+          stop_exam("intruption");
+        }else{
+          document.getElementById('warning')!.style.display="block";
+        }
+      }
+    }
+  };
  
-  // document.addEventListener('fullscreenchange', () => {
-  //   if(!disable_visiblity && exam_start){
-  //     if (document.fullscreenElement == null) {
-  //       if(sessionStorage.getItem('first_exam_warning')?.toLowerCase()==="true"){
-  //         stop_exam("intruption");
-  //       }else{
-  //         document.getElementById('warning')!.style.display="block";
-  //       }
-  //     }
-  //   }
-  // });
+  document.addEventListener('fullscreenchange', () => {
+    if(!disable_visiblity && exam_start){
+      if (document.fullscreenElement == null) {
+        if(sessionStorage.getItem('first_exam_warning')?.toLowerCase()==="true"){
+          stop_exam("intruption");
+        }else{
+          document.getElementById('warning')!.style.display="block";
+        }
+      }
+    }
+  });
  
   const handleStartExam=()=>{
     document.documentElement.requestFullscreen();
@@ -135,6 +139,7 @@ const ExamLayout: React.FC<MainLayoutProps> = ({children}) => {
             </div>
         </div>            
       </div>
+
       <div className='overlay' id='warning'>
         <div className='overlay-content'>
           <div className='overlay-elem'>
