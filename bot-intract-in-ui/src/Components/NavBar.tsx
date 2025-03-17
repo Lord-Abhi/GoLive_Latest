@@ -1,4 +1,4 @@
-// NavBar.tsx
+  // NavBar.tsx
 import React from 'react';
 import '../css/NavBar.css';
 import { useNavigate } from 'react-router-dom';
@@ -22,11 +22,17 @@ const NavBar: React.FC = () => {
     navigate('/transcription');
   };
 
+  const handleToSimulation = () => {
+    // Perform login logic here
+    navigate('/simulation');
+  };
+
   return (
     <div className="navbar">
       <button className="nav-button" onClick={handleToDashboard}>Dashboard</button>
       <button className="nav-button" onClick={handleToTranscription}>Pronunciation Assessment</button>
       <button className="nav-button" onClick={handleToTests}>Tests</button>
+      <button className="nav-button" onClick={handleToSimulation}>Simulation</button>
       <button className="nav-button">Settings</button>
     </div>
   );

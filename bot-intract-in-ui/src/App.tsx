@@ -11,6 +11,7 @@ import Login from "./Components/Login";
 import Video from "./Components/Video";
 //import SWOT from "./Components/SWOT";
 import Transcription from "./Components/Transcription";
+import Simulation from "./Components/Simulation";
 
 function App() {
   //Get parametes from URL
@@ -46,6 +47,7 @@ function App() {
       <Route path="/grammar" element={<Grammar />} />
       <Route path="/video" element={<Video />} />
       <Route path="/tests1" element={<Tests1 />} />
+      <Route path="/simulation" element={<Simulation />} />
       {/* <Route path="/swot" element={<SWOT />} /> */}
       <Route path="/transcription" element={<Transcription />} />
       <Route path="/main" element={<MainLayout />}>
